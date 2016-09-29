@@ -1,3 +1,14 @@
+#install:
+```
+npm install
+broccoli build dist
+```
+Main change - i renamed (disabled) .babelrc file
+
+
+
+
+
 This is the TodoMVC app written with [Alkali](https://github.com/kriszyp/alkali). This is a good example of how to build reactive UI with Alkali and leverage its features. I've included a short walk through to see how this works.
 
 ## Performance
