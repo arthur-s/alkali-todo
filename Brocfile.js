@@ -39,7 +39,7 @@ function build(tree, outputFileName, prefix) {
       },
 
       // plugins: [
-      //   alkaliTr() //not working
+      //   alkaliTr() // already defined in .babelrc
       // ]
 
     });
@@ -69,9 +69,10 @@ function collapse(tree, outputFileName) {
   var nodeMods = Funnel('node_modules', {
     include: [
       'alkali/*.js',
-      // 'alkali/extensions/*.js',
+      // 'alkali/extensions/*.js', // <--- here i cannot turn on this includes becouse of line "plugins": ["transform-alkali"] in .babelrc file
       // 'alkali/util/*.js',
     ]
+    // include: ['alkali/dist/index.js'] <--- cannot incllude it too when "transform-alkali" in .babelrc
   })
   allMods = merge([modulesScripts,nodeMods]);
 
