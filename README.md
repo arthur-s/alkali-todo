@@ -4,7 +4,6 @@ npm install
 bower install loader.js
 broccoli build dist
 ```
-Main change - i renamed (disabled) .babelrc file
 
 *********************
 
