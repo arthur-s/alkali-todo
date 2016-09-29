@@ -50,11 +50,11 @@
 
 	var _TodoList2 = _interopRequireDefault(_TodoList);
 
-	var _TodoView = __webpack_require__(10);
+	var _TodoView = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"./TodoView\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
 
 	var _TodoView2 = _interopRequireDefault(_TodoView);
 
-	var _benchmark = __webpack_require__(13);
+	var _benchmark = __webpack_require__(11);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -872,6 +872,8 @@
 			}
 			if (element.created) {
 				applyOnCreate = element.created(applyOnCreate) || applyOnCreate
+			} else if (applyOnCreate.created) {
+				applyOnCreate = applyOnCreate.created.call(element, applyOnCreate) || applyOnCreate
 			}
 			// TODO: inline this for better performance, possibly
 			assignProperties(element, applyOnCreate)
@@ -2104,7 +2106,7 @@
 				if (this.returnedVariable) {
 					return this.returnedVariable.validate(target, schema)
 				}
-				if (schema.type && (schema.type !== typeof target)) {
+				if (schema && schema.type && (schema.type !== typeof target)) {
 					return ['Target type of ' + typeof target + ' does not match schema type of ' + schema.type]
 				}
 				var valid = []
@@ -2975,6 +2977,9 @@
 			},
 			getValue: function(context) {
 				var target = this.target
+				// need to actually access the target value, so it can be evaluated in case it
+				// there is a returned variable that we should delegate to.
+				target.valueOf(context)
 				return target.validate(target, target.schema)
 			}
 		})
@@ -4370,262 +4375,8 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__))
 
 /***/ },
-/* 10 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-		value: true
-	});
-
-	var _alkali = __webpack_require__(2);
-
-	var _Todos = __webpack_require__(11);
-
-	var _Todos2 = _interopRequireDefault(_Todos);
-
-	var _Todo = __webpack_require__(12);
-
-	var _Todo2 = _interopRequireDefault(_Todo);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /*
-	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               This is the main "view" component that renders the todos as DOM elements,
-	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               using the Alkali DOM constructors in declarative style
-	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               */
-
-
-	// variable representing the state of editing each row
-
-	var Editing = function (_Variable) {
-		_inherits(Editing, _Variable);
-
-		function Editing() {
-			_classCallCheck(this, Editing);
-
-			return _possibleConstructorReturn(this, Object.getPrototypeOf(Editing).apply(this, arguments));
-		}
-
-		return Editing;
-	}(_alkali.Variable);
-
-	// define our main "component", the main todo view of the todo (view) data model.
-	// This could easily be a reusable component, although in the case of the TodoMVC
-	// CSS, it relies heavily on id-based elements that can not really be used multiple times
-	// The component is defined as a hierarchy of HTML elements
-
-
-	var TodoView = function (_Div) {
-		_inherits(TodoView, _Div);
-
-		function TodoView() {
-			_classCallCheck(this, TodoView);
-
-			return _possibleConstructorReturn(this, Object.getPrototypeOf(TodoView).apply(this, arguments));
-		}
-
-		return TodoView;
-	}((0, _alkali.Div)('#todo', [
-	// we use selector syntax to define ids and class, and arrays to define children
-	(0, _alkali.Section)('#todoapp', [(0, _alkali.Header)('#header', [(0, _alkali.H1)(['todos']), (0, _alkali.Form)([(0, _alkali.Input)('#new-todo', {
-		autofocus: true,
-		placeholder: 'What needs to be done?',
-		// we can variables for any property; when we use a variable in a user-input
-		// driven property, the binding is bi-directional
-		value: _Todos2.default.property('newItem')
-	})], {
-		onsubmit: function onsubmit(event) {
-			event.preventDefault();
-			_Todos2.default.for(this).add(); // add a new todo when the user submits
-		}
-	})]), (0, _alkali.Section)('#main', [(0, _alkali.Checkbox)('#toggle-all', {
-		checked: _Todos2.default.allCompleted
-	}), _alkali.Label, (0, _alkali.UL)('#todo-list', {
-		content: _Todos2.default.listView,
-		each: (0, _alkali.LI)('.task', [_alkali.react.from(_alkali.react.fcall(_alkali.Checkbox, ['.toggle', _alkali.react.prop(_Todo2.default, 'completed')])), (0, _alkali.Label)('.view', [_Todo2.default.property('name')], {
-			textDecoration: _alkali.react.from(_alkali.react.cond(_alkali.react.prop(_Todo2.default, 'completed'), 'line-through', 'none'))._sN('textDecoration'),
-			ondblclick: function ondblclick() {
-				var editing = Editing.for(this);
-				editing.put(!editing.valueOf());
-				this.nextSibling.focus();
-			}
-		}), (0, _alkali.Input)('.edit', {
-			value: _Todo2.default.property('name'),
-			onblur: function onblur() {
-				Editing.for(this).put(false);
-			},
-			onchange: function onchange() {
-				Editing.for(this).put(false);
-			}
-		}), (0, _alkali.Button)('.destroy', {
-			onclick: _Todos2.default.delete
-		})], {
-			hasOwn: Editing,
-			classes: {
-				editing: Editing
-			}
-		})
-	})]), (0, _alkali.Footer)('#footer', [_alkali.react.from(_alkali.react.fcall(_alkali.Span, ['#todo-count', _alkali.react.add(_alkali.react.prop(_Todos2.default, 'todoCount'), _alkali.react.cond(_alkali.react.greater(_alkali.react.prop(_Todos2.default, 'todoCount'), 1), ' items left', ' item left')), _alkali.react.obj(function (v0) {
-		return {
-			display: v0
-		};
-	}, [_alkali.react.greater(_alkali.react.prop(_Todos2.default, 'todoCount'), 0)])])), (0, _alkali.UL)('#filters', [_alkali.LI, [(0, _alkali.A)({ href: '#/' }, ['All '])], _alkali.LI, [(0, _alkali.A)({ href: '#/active' }, ['Active '])], _alkali.LI, [(0, _alkali.A)({ href: '#/completed' }, ['Completed'])]]), (0, _alkali.Button)('#clear-completed', 'Clear completed', {
-		onclick: _Todos2.default.clearCompleted
-	})])]), (0, _alkali.Footer)('#info', [(0, _alkali.P)('', 'Double-click to edit a todo')])]));
-
-	exports.default = TodoView;
-
-/***/ },
+/* 10 */,
 /* 11 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-		value: true
-	});
-
-	var _alkali = __webpack_require__(2);
-
-	var _TodoList = __webpack_require__(1);
-
-	var _TodoList2 = _interopRequireDefault(_TodoList);
-
-	var _Todo = __webpack_require__(12);
-
-	var _Todo2 = _interopRequireDefault(_Todo);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /*
-	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               This module represents the "view model" in MVVM parlance (or an MVC 
-	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               controller that offers "data views"). The data "model" is found in
-	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               the TodoList (although it is little more than a variable that holds
-	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               an array).
-	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               */
-
-
-	// our router, expressed as a variable
-	var currentPath = new _alkali.Variable(location.hash.replace(/#\//, ''));
-	window.onhashchange = function () {
-		currentPath.put(location.hash.replace(/#\//, ''));
-	};
-
-	var ActiveView = void 0,
-	    CompletedView = void 0;
-	// the main view model
-
-	var Todos = function (_Variable) {
-		_inherits(Todos, _Variable);
-
-		function Todos() {
-			_classCallCheck(this, Todos);
-
-			return _possibleConstructorReturn(this, Object.getPrototypeOf(Todos).apply(this, arguments));
-		}
-
-		return Todos;
-	}((0, _alkali.Variable)({
-		add: function add() {
-			// add a new todo
-			_TodoList2.default.for(this).push({
-				name: this.get('newItem')
-			});
-			// clear out the input
-			this.set('newItem', '');
-		},
-
-		// delegate this to the list data model
-		clearCompleted: _TodoList2.default.clearCompleted,
-		allCompleted:
-		// the checkbox corresponds to the state of the todos
-		_TodoList2.default.to(function (todos) {
-			return todos.length && todos.every(function (todo) {
-				return todo.completed;
-			});
-		}).setReverse( // and define the reverse action when the checkbox changes
-		function (allCompleted) {
-			return _TodoList2.default.defaultInstance.forEach(_Todo2.default, function (todo) {
-				todo.set('completed', allCompleted);
-			});
-		}),
-		delete: function _delete(event) {
-			// delete a todo
-			_TodoList2.default.for(this).delete(_Todo2.default.for(event).valueOf());
-		},
-
-		// our three data "views" of the different filtered todo lists
-		activeView: ActiveView = _TodoList2.default.filter(function (todo) {
-			return !todo.completed;
-		}),
-		completedView: CompletedView = _TodoList2.default.filter(function (todo) {
-			return todo.completed;
-		}),
-		listView: currentPath.to(function (path) {
-			return(
-				// determine which view to show based on the current hash path
-				path === 'completed' ? CompletedView : path === 'active' ? ActiveView : _TodoList2.default
-			);
-		}),
-		todoCount: ActiveView.to(function (active) {
-			return active.length;
-		})
-	}));
-
-	exports.default = Todos;
-
-/***/ },
-/* 12 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _alkali = __webpack_require__(2);
-
-	var _TodoList = __webpack_require__(1);
-
-	var _TodoList2 = _interopRequireDefault(_TodoList);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var Todo = function (_Variable) {
-	  _inherits(Todo, _Variable);
-
-	  function Todo() {
-	    _classCallCheck(this, Todo);
-
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(Todo).apply(this, arguments));
-	  }
-
-	  return Todo;
-	}(_alkali.Variable);
-
-	exports.default = Todo;
-
-	Todo.collection = _TodoList2.default;
-
-/***/ },
-/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
